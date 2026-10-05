@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Một Cửa HUCE — Cán Bộ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/canbo.css" />
+</head>
+<body>
+
+  <div class="page-wrapper" style="max-width:1000px">
+    <div class="card">
+
+      <!-- BANNER -->
+      <div class="banner">
+        <div class="banner-avatar">
+          <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" width="52" height="52">
+            <circle cx="40" cy="40" r="38" fill="rgba(255,255,255,0.15)"/>
+            <rect x="22" y="28" width="36" height="28" rx="4" fill="rgba(255,255,255,0.45)"/>
+            <rect x="30" y="22" width="20" height="10" rx="3" fill="rgba(255,255,255,0.6)"/>
+          </svg>
+        </div>
+        <div class="banner-text">
+          <h1>HỆ THỐNG ĐĂNG KÝ THỦ TỤC HÀNH CHÍNH MỘT CỬA</h1>
+          <p>HUCE – Cổng cán bộ · Dịch vụ hỏi đáp DT03</p>
+        </div>
+      </div>
+
+      <!-- ĐĂNG NHẬP  -->
+      <div id="loginView" class="card-body">
+        <div class="login-wrap">
+          <div class="login-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1a2a6c" stroke-width="2" stroke-linecap="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          </div>
+          <h2 class="login-title">Đăng nhập cán bộ</h2>
+          <div class="form-group">
+            <label class="form-label">Mã cán bộ <span class="required">*</span></label>
+            <input class="form-control" id="loginMaCB" type="text" placeholder="VD: CB001" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Họ và tên <span class="required">*</span></label>
+            <input class="form-control" id="loginHoTen" type="text" placeholder="VD: Nguyễn Văn A" />
+          </div>
+          <div id="loginError" class="api-error" style="display:none"></div>
+          <button class="btn-submit" style="width:100%" onclick="doLogin()">Đăng nhập</button>
+        </div>
+      </div>
+
+      <!--  MAIN (sau đăng nhập) -->
+      <div id="mainView" style="display:none">
+
+        <!-- User row -->
+        <div class="user-row">
+          <span class="cb-badge">CÁN BỘ</span>
+          <span class="user-name" id="cbHoTenDisplay"></span>
+          <span class="sep">|</span>
+          <span class="user-id" id="cbMaDisplay"></span>
+          <span class="sep">|</span>
+          <button class="btn-logout" onclick="doLogout()">Đăng xuất</button>
+          <span style="margin-left:auto;font-size:12px;color:var(--text-muted)">
+            Phòng Đào tạo · HUCE
+          </span>
+        </div>
+
+        <div class="card-body">
+
+          <!-- Thanh filter + làm mới -->
+          <div class="action-bar" style="margin-bottom:12px">
+            <span class="section-title">Danh sách câu hỏi của sinh viên</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select class="filter-select" id="filterTrangThai" onchange="applyFilter()">
+                <option value="">Tất cả trạng thái</option>
+                <option value="DaGui">Đã gửi</option>
+                <option value="DaTraLoi">Đã trả lời</option>
+              </select>
+              <button class="btn-refresh" onclick="loadTatCa()">↻ Làm mới</button>
+            </div>
+          </div>
+
+          <!-- Bố cục 2 cột -->
+          <div class="cb-layout">
+
+            <!-- CỘT TRÁI: danh sách -->
+            <div class="cb-list-col">
+              <div id="cbListBody">
+                <div class="empty-state" style="padding:40px 0">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c5cad6" stroke-width="1.2">
+                    <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
+                  <span class="empty-text">Chưa có câu hỏi nào</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- CỘT PHẢI: chi tiết + trả lời -->
+            <div class="cb-detail-col" id="cbDetailCol">
+              <div class="cb-detail-empty">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1">
+                  <path d="M8 12h8M8 16h5m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <p>Chọn một câu hỏi để xem chi tiết và trả lời</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <!-- /mainView -->
+
+    </div>
+    <div class="page-footer">
+      Trường Đại học Xây dựng Hà Nội (HUCE) &nbsp;·&nbsp; Cổng cán bộ
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="cb-toast"></div>
+
+  <script src="js/canbo.js"></script>
+</body>
+</html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Một Cửa HUCE — Hỏi Đáp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <div class="page-wrapper">
+    <div class="card">
+
+      <!-- BANNER -->
+      <div class="banner">
+        <div class="banner-avatar">
+          <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" width="52" height="52">
+            <circle cx="40" cy="40" r="38" fill="rgba(255,255,255,0.15)"/>
+            <circle cx="40" cy="30" r="14" fill="rgba(255,255,255,0.5)"/>
+            <ellipse cx="40" cy="65" rx="22" ry="12" fill="rgba(255,255,255,0.3)"/>
+          </svg>
+        </div>
+        <div class="banner-text">
+          <h1>HỆ THỐNG ĐĂNG KÝ THỦ TỤC HÀNH CHÍNH MỘT CỬA</h1>
+          <p>HUCE – Dịch vụ hỏi đáp</p>
+        </div>
+      </div>
+
+      <!-- USER ROW -->
+      <div class="user-row">
+        <span class="user-name">NGUYỄN VIẾT HOÀNG</span>
+        <span class="sep">|</span>
+        <span class="user-id">ID: 0034167</span>
+        <span class="sep">|</span>
+        <button class="btn-logout" onclick="confirmLogout()">Log out</button>
+        <button class="btn-profile">Cập nhật hồ sơ</button>
+      </div>
+
+      <!-- CARD BODY -->
+      <div class="card-body">
+
+        <!-- LIST VIEW -->
+        <div id="listView">
+          <div class="action-bar">
+            <span class="section-title">Danh sách yêu cầu</span>
+            <button class="btn-add" onclick="showForm()">+ Thêm mới</button>
+          </div>
+          <div class="payment-bar">
+            <a href="#" class="payment-link">Hướng dẫn thanh toán (mới)</a>
+            <span class="refresh-link" onclick="loadList()">(Làm mới)</span>
+          </div>
+          <table class="req-table">
+            <thead>
+              <tr>
+                <th class="col-num">#</th>
+                <th>Nội dung</th>
+              </tr>
+            </thead>
+            <tbody id="requestBody">
+              <tr id="emptyRow">
+                <td colspan="2" class="empty-cell">
+                  <div class="empty-state">
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#c5cad6" stroke-width="1.2">
+                      <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span class="empty-text">Chưa có yêu cầu nào</span>
+                    <span class="empty-hint">Nhấn <strong>+ Thêm mới</strong> để gửi câu hỏi</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- FORM VIEW -->
+        <div id="formView">
+          <button class="btn-back" onclick="showList()">&#8592; QUAY LẠI</button>
+          <div class="form-group">
+            <label class="form-label" for="contentInput">
+              Nội dung <span class="required">*</span>
+            </label>
+            <textarea
+              class="form-control"
+              id="contentInput"
+              rows="5"
+              placeholder="Nhập câu hỏi của bạn..."
+              oninput="updateCount(this,'charCount',2000)"
+            ></textarea>
+            <div style="text-align:right;font-size:11px;color:#9ca3af;margin-top:4px">
+              <span id="charCount"></span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Minh chứng (nếu có)</label>
+            <div class="file-area">
+              <div class="file-top">
+                <button class="btn-choose-file" onclick="document.getElementById('fileInput').click()">
+                  + Chọn file
+                </button>
+                <input type="file" id="fileInput" style="display:none"
+                  accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" onchange="handleFile(this)"/>
+              </div>
+              <div class="file-drop-zone">
+                <p id="fileLabel"></p>
+              </div>
+            </div>
+          </div>
+          <div id="apiError" class="api-error" style="display:none"></div>
+          <div class="form-actions">
+            <button class="btn-submit" id="submitBtn" onclick="submitRequest()">GỬI YÊU CẦU</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="page-footer">
+      Trường Đại học Xây dựng Hà Nội (HUCE) &nbsp;·&nbsp; Hệ thống một cửa
+    </div>
+  </div>
+
+  <!-- MODAL THÀNH CÔNG -->
+  <div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
+    <div class="modal">
+      <div class="modal-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+             stroke="#3b6d11" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <h2 class="modal-title">Gửi yêu cầu thành công!</h2>
+      <p class="modal-sub">
+        Yêu cầu của bạn đã được tiếp nhận.<br/>
+        Cán bộ phụ trách sẽ phản hồi trong vòng <strong>1–3 ngày làm việc</strong>.
+      </p>
+      <div class="ticket-box" id="ticketInfo"></div>
+      <hr class="divider" />
+      <p class="notif-label">Thông báo đã gửi</p>
+      <div class="notif-row">
+        <div class="notif-icon sys">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#185fa5" stroke-width="2" stroke-linecap="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </div>
+        <p class="notif-text">
+          <strong>Hệ thống một cửa:</strong>
+          Yêu cầu đã được lưu vào cơ sở dữ liệu và chuyển tới cán bộ phụ trách.
+        </p>
+      </div>
+      <div class="notif-row">
+        <div class="notif-icon mail">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a32d2d" stroke-width="2" stroke-linecap="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"/>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+          </svg>
+        </div>
+        <p class="notif-text">
+          <strong>Gmail:</strong> Email xác nhận đang được gửi tới
+          <span id="emailDisplay" class="email-highlight"></span>.
+        </p>
+      </div>
+      <button class="btn-close-modal" onclick="closeModal()">Đóng &amp; quay lại danh sách</button>
+    </div>
+  </div>
+
+  <!-- MODAL CHI TIẾT — có phần phản hồi cán bộ -->
+  <div class="overlay" id="detailOverlay" onclick="handleDetailOverlayClick(event)">
+    <div class="modal detail-modal" style="max-width:520px">
+      <div class="detail-header">
+        <h2 class="detail-title">Chi tiết yêu cầu</h2>
+        <button class="btn-detail-close" onclick="closeDetailModal()">&#10005;</button>
+      </div>
+
+      <!-- Thông tin sinh viên -->
+      <div class="detail-user-row">
+        <span class="detail-user-name">NGUYỄN VIẾT HOÀNG</span>
+        <span class="detail-time-label">Thời gian gửi:
+          <span class="detail-time-value" id="detailTime"></span>
+        </span>
+      </div>
+      <div class="detail-meta-row">
+        <span class="detail-msv">Mã SV: <span id="detailMsv">0034167</span></span>
+        <span class="detail-sep">|</span>
+        <span>Mã YC: <strong id="detailMaYc"></strong></span>
+        <span class="detail-sep">|</span>
+        <span class="detail-status-label">Trạng thái:
+          <span id="detailStatus" class="status-sent"></span>
+        </span>
+      </div>
+
+      <div class="detail-divider"></div>
+
+      <!-- Nội dung câu hỏi -->
+      <div class="detail-section-label">NỘI DUNG CÂU HỎI</div>
+      <div class="detail-content" id="detailContent"></div>
+
+      <!-- Phản hồi cán bộ -->
+      <div class="detail-section-label" style="margin-top:16px">
+        PHẢN HỒI CỦA CÁN BỘ
+      </div>
+      <div id="detailPhanHoi"
+           style="max-height:200px;overflow-y:auto;margin-bottom:16px">
+      </div>
+
+      <div class="detail-actions">
+        <button class="btn-detail-dong" onclick="closeDetailModal()">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# .NET build output
+bin/
+obj/
+
+# ASP.NET / development secrets
+.env
+secrets.json
+
+# Node.js
+node_modules/
+
+# Frontend build output
+dist/
+
+# Logs
+*.log
+
+# OS
+Thumbs.db
+.DS_Store
+*.lscache
